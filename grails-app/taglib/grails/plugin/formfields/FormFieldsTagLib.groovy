@@ -163,6 +163,7 @@ class FormFieldsTagLib implements GrailsApplicationAware {
 			model.value = renderDefaultDisplay(model, attrs)
 		}
 
+		println ">>> Body: ${model.value}"
 		out << renderForDisplay(propertyAccessor, model, attrs)
 	}
 
@@ -210,11 +211,13 @@ class FormFieldsTagLib implements GrailsApplicationAware {
 
 	private String renderForDisplay(BeanPropertyAccessor propertyAccessor, Map model, Map attrs = [:]) {
 		def template = formFieldsTemplateService.findTemplate(propertyAccessor, 'display')
-		if (template) {
-			render template: template.path, plugin: template.plugin, model: model + attrs
-		} else {
-			model.value
-		}
+//		withCodec(expression: "raw") {
+			if (template) {
+				render template: template.path, plugin: template.plugin, model: model + attrs, encodeAs: [all: 'raw']
+			} else {
+				model.value
+			}
+//		}
 	}
 
 	private Object resolveBean(beanAttribute) {
